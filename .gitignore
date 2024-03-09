@@ -1,0 +1,10 @@
+src_Copy/*
+**/__pycache__/
+**/.idea/
+*.csv
+src/artifacts/out.mp4
+docs
+src/consumer/artifacts
+src/processor/img
+**/export/*.json
+**/import
