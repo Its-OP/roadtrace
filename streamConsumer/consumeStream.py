@@ -18,7 +18,7 @@ TAKE_VIDEO_FROM = os.environ['TAKE_VIDEO_FROM']
 EXPORT_FRAMES_TO = os.environ['EXPORT_FRAMES_TO']
 
 # load models
-model = ultralytics.YOLO('Artifacts/models/yolov8n.pt')
+model = ultralytics.YOLO('Artifacts/models/yolov8s.pt')
 model.to(device)
 
 # prepare to process video

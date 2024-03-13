@@ -1,3 +1,4 @@
+import math
 import time
 from typing import Callable, List, Tuple
 
@@ -30,7 +31,7 @@ class VideoProcessor(IVideoProcessor):
             start_time = time.time()
 
             regions_of_interest = self._find_regions(frame)
-            print(f"Regions of interest on frame {frame_nmr} were found and tracked detected. Time elapsed:"
+            print(f"Regions of interest on frame {frame_nmr} were found and tracked. Time elapsed:"
                   f"{time.time() - start_time} seconds")
 
             vehicles = [Vehicle(x1, y1, x2, y2, track_id) for (x1, y1, x2, y2, score, class_id, track_id)
@@ -47,7 +48,12 @@ class VideoProcessor(IVideoProcessor):
         print("Processing finished, shutting down...")
 
     def _find_regions(self, frame: np.ndarray) -> List[Region]:
-        results: List[ultralytics.engine.results.Results] = self._model.track(frame, persist=True)
+        results: List[ultralytics.engine.results.Results]\
+            = self._model.track(source=frame,
+                                persist=True,
+                                tracker="bytetrack.yaml",
+                                imgsz=(self._normalize(frame.shape[0]),self._normalize(frame.shape[1])),
+                                classes=self._vehicle_codes)
         boxes: List[Tuple[int]] = \
             [tuple(box_coordinates) for box_coordinates in results[0].boxes.xyxy.int().cpu().tolist()]
         scores: List[float] = results[0].boxes.conf.float().cpu().tolist()
@@ -67,3 +73,6 @@ class VideoProcessor(IVideoProcessor):
         if self._processing_results:
             self._on_batch_processed(self._processing_results)
             self._processing_results = []
+
+    def _normalize(self, size: int) -> int:
+        return math.ceil(size / 64) * 32
