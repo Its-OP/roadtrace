@@ -5,9 +5,11 @@ import cv2
 import torch
 import ultralytics
 
-from Application.FrameProcessingResults import FrameProcessingResult
+from Application.entities.FrameProcessingResultRich import FrameProcessingResultRich
 from Infrastructure.VideoEditor import VideoEditor
 from Application.VideoProcessor import VideoProcessor
+from Infrastructure.messaging.FrameMessage import FrameMessage
+from Infrastructure.messaging.RabbitMQPublisher import RabbitMQPublisher
 
 # Check for CUDA device and set it
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -33,19 +35,19 @@ file_size = file_size_bytes = os.path.getsize(TAKE_VIDEO_FROM)
 bitrate = (file_size_bytes * 8) / duration
 
 print("Total frames: " + str(frame_count))
+
+# init services
 video_editor = VideoEditor((frame_w, frame_h), (1920, 1088), fps)
+publisher = RabbitMQPublisher()
 
 
-def on_batch_processed(results: List[FrameProcessingResult]) -> None:
+def on_batch_processed(results: List[FrameProcessingResultRich]) -> None:
     raw_frames = [result.frame for result in results]
     bytes = video_editor.compress(raw_frames)
-    # with open(EXPORT_FRAMES_TO, 'wb') as file:
-    #     file.write(bytes)
-    # sz = len(bytes)
-    # a = 1
+    message = FrameMessage(results, bytes)
+    publisher.send_message(message)
 
 
 video_processor = VideoProcessor(model, 30, on_batch_processed, VEHICLE_CODES, 0.5, video_editor)
+publisher.start()
 video_processor.start_processing(cap)
-
-# frame_repository.export(EXPORT_FRAMES_TO)

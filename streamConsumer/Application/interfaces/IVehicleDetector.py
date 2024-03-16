@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
-from Application.Region import Region
+from Application.entities.Region import Region
 
 
 class IVehicleDetector(ABC):

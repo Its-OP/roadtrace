@@ -6,8 +6,8 @@ import numpy as np
 import ultralytics
 from ultralytics import YOLO
 
-from Application.FrameProcessingResults import FrameProcessingResult
-from Application.Region import Region
+from Application.entities.FrameProcessingResultRich import FrameProcessingResultRich
+from Application.entities.Region import Region
 from Application.Timer import Timer
 from Application.interfaces.IRescaler import IRescaler
 from Domain.Vehicle import Vehicle
@@ -18,7 +18,7 @@ class VideoProcessor(IVideoProcessor):
     def __init__(self,
                  model: YOLO,
                  max_batch_size: int,
-                 on_batch_processed: Callable[[List[FrameProcessingResult]], None],
+                 on_batch_processed: Callable[[List[FrameProcessingResultRich]], None],
                  vehicle_codes: List[int],
                  detection_confidence_threshold: float,
                  video_editor: IRescaler):
@@ -28,25 +28,25 @@ class VideoProcessor(IVideoProcessor):
         self._on_batch_processed = on_batch_processed
         self.detection_confidence_threshold = detection_confidence_threshold
         self._vehicle_codes = vehicle_codes
-        self._processing_results: List[FrameProcessingResult] = []
+        self._processing_results: List[FrameProcessingResultRich] = []
 
     def start_processing(self, cap: cv2.VideoCapture):
         ret, frame = cap.read()
         frame = self._video_editor.rescale(frame)
         frame_nmr = 1
         while ret or frame_nmr == 0:
-            with Timer(f"Regions of interest on frame {frame_nmr} were found and tracked."):
+            frame = self._video_editor.rescale(frame)
+            with Timer(f"Regions of interest on frame {frame_nmr} were found and tracked"):
                 regions_of_interest = self._find_regions(frame)
 
             vehicles = [Vehicle(x1, y1, x2, y2, track_id) for (x1, y1, x2, y2, score, class_id, track_id)
                         in self._find_vehicles(regions_of_interest)]
-            self._processing_results.append(FrameProcessingResult(frame_nmr, vehicles, frame))
+            self._processing_results.append(FrameProcessingResultRich(frame_nmr, vehicles, frame))
 
             if len(self._processing_results) > self._max_batch_size:
                 self._refresh_batch()
 
             ret, frame = cap.read()
-            frame = self._video_editor.rescale(frame)
             frame_nmr += 1
 
         self._refresh_batch()

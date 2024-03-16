@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List
 
-from Application.Region import Region
+from Application.entities.Region import Region
 
 VehicleCoordinates = np.ndarray
 
