@@ -6,6 +6,7 @@ import torch
 import ultralytics
 
 from Application.FrameProcessingResults import FrameProcessingResult
+from Application.VideoCompressor import VideoCompressor
 from Application.VideoProcessor import VideoProcessor
 from Infrastructure.frame_repository import FrameRepository
 
@@ -23,16 +24,29 @@ model.to(device)
 
 # prepare to process video
 cap = cv2.VideoCapture(TAKE_VIDEO_FROM)
-print("Total frames: " + str(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
-frame_repository = FrameRepository()
+frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+frame_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+frame_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+fps = int(cap.get(cv2.CAP_PROP_FPS))
+
+duration = frame_count / fps
+file_size = file_size_bytes = os.path.getsize(TAKE_VIDEO_FROM)
+bitrate = (file_size_bytes * 8) / duration
+
+print("Total frames: " + str(frame_count))
+video_encoder = VideoCompressor((frame_w, frame_h), fps)
 
 
 def on_batch_processed(results: List[FrameProcessingResult]) -> None:
-    for result in results:
-        frame_repository.append_frame_info(result.frame_number, result.vehicles)
+    raw_frames = [result.frame for result in results]
+    bytes = video_encoder.compress(raw_frames)
+    # with open(EXPORT_FRAMES_TO, 'wb') as file:
+    #     file.write(bytes)
+    # sz = len(bytes)
+    # a = 1
 
 
 video_processor = VideoProcessor(model, 30, on_batch_processed, VEHICLE_CODES, 0.5)
 video_processor.start_processing(cap)
 
-frame_repository.export(EXPORT_FRAMES_TO)
+# frame_repository.export(EXPORT_FRAMES_TO)

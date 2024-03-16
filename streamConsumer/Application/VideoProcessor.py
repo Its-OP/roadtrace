@@ -9,14 +9,18 @@ from ultralytics import YOLO
 
 from Application.FrameProcessingResults import FrameProcessingResult
 from Application.Region import Region
+from Application.Timer import Timer
 from Domain.Vehicle import Vehicle
 from Domain.abstract_classes.IVideoProcessor import IVideoProcessor
 
 
 class VideoProcessor(IVideoProcessor):
-    def __init__(self, model: YOLO, max_batch_size: int,
+    def __init__(self,
+                 model: YOLO,
+                 max_batch_size: int,
                  on_batch_processed: Callable[[List[FrameProcessingResult]], None],
-                 vehicle_codes: List[int], detection_confidence_threshold: float):
+                 vehicle_codes: List[int],
+                 detection_confidence_threshold: float):
         self._model = model
         self._max_batch_size = max_batch_size
         self._on_batch_processed = on_batch_processed
@@ -36,7 +40,7 @@ class VideoProcessor(IVideoProcessor):
 
             vehicles = [Vehicle(x1, y1, x2, y2, track_id) for (x1, y1, x2, y2, score, class_id, track_id)
                         in self._find_vehicles(regions_of_interest)]
-            self._processing_results.append(FrameProcessingResult(frame_nmr, vehicles))
+            self._processing_results.append(FrameProcessingResult(frame_nmr, vehicles, frame))
 
             if len(self._processing_results) > self._max_batch_size:
                 self._refresh_batch()
@@ -71,7 +75,8 @@ class VideoProcessor(IVideoProcessor):
 
     def _refresh_batch(self):
         if self._processing_results:
-            self._on_batch_processed(self._processing_results)
+            with Timer("Callback executed"):
+                self._on_batch_processed(self._processing_results)
             self._processing_results = []
 
     def _normalize(self, size: int) -> int:
