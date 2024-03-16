@@ -1,5 +1,4 @@
 import math
-import time
 from typing import Callable, List, Tuple
 
 import cv2
@@ -10,7 +9,6 @@ from ultralytics import YOLO
 from Application.FrameProcessingResults import FrameProcessingResult
 from Application.Region import Region
 from Application.Timer import Timer
-from Application.VideoEditor import VideoEditor
 from Application.interfaces.IRescaler import IRescaler
 from Domain.Vehicle import Vehicle
 from Domain.abstract_classes.IVideoProcessor import IVideoProcessor

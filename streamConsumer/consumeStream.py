@@ -6,7 +6,7 @@ import torch
 import ultralytics
 
 from Application.FrameProcessingResults import FrameProcessingResult
-from Application.VideoEditor import VideoEditor
+from Infrastructure.VideoEditor import VideoEditor
 from Application.VideoProcessor import VideoProcessor
 
 # Check for CUDA device and set it
