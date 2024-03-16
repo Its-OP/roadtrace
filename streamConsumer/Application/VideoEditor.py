@@ -1,13 +1,17 @@
 import av
+import cv2
 import numpy as np
 from io import BytesIO
 from typing import Tuple, List
 
+from Application.interfaces.IRescaler import IRescaler
 
-# noinspection PyUnresolvedReferences
-class VideoCompressor:
-    def __init__(self, frame_dim: Tuple[int, int], frame_rate: int):
-        self._frame_dim = frame_dim
+
+class VideoEditor(IRescaler):
+    def __init__(self, external_frame_dim: Tuple[int, int],
+                 max_dim: Tuple[int, int],
+                 frame_rate: int):
+        self._frame_dim = self._calculate_frame_dimensions(max_dim, external_frame_dim)
         self._frame_rate = frame_rate
         self._video_format = 'mp4'
         self._codec = 'libx264'
@@ -43,3 +47,22 @@ class VideoCompressor:
 
         # Return the bytes
         return output_buffer.getvalue()
+
+    def rescale(self, frame: np.ndarray) -> np.ndarray:
+        return cv2.resize(frame, self._frame_dim, interpolation=cv2.INTER_AREA)
+
+    @staticmethod
+    def _calculate_frame_dimensions(max_dim: Tuple[int, int], frame_dim: Tuple[int, int]) -> Tuple[int, int]:
+        scale_w = min(max_dim[0] / frame_dim[0], 1)
+        scale_h = min(max_dim[1] / frame_dim[1], 1)
+        # Use the smaller scale factor to preserve aspect ratio
+        scale = min(scale_w, scale_h)
+
+        # Calculate new dimensions
+        new_w = int(frame_dim[0] * scale)
+        new_h = int(frame_dim[1] * scale)
+
+        # Adjust dimensions to be divisible by 32
+        new_w = new_w - (new_w % 32)
+        new_h = new_h - (new_h % 32)
+        return new_w, new_h

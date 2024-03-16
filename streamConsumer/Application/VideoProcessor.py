@@ -10,6 +10,8 @@ from ultralytics import YOLO
 from Application.FrameProcessingResults import FrameProcessingResult
 from Application.Region import Region
 from Application.Timer import Timer
+from Application.VideoEditor import VideoEditor
+from Application.interfaces.IRescaler import IRescaler
 from Domain.Vehicle import Vehicle
 from Domain.abstract_classes.IVideoProcessor import IVideoProcessor
 
@@ -20,8 +22,10 @@ class VideoProcessor(IVideoProcessor):
                  max_batch_size: int,
                  on_batch_processed: Callable[[List[FrameProcessingResult]], None],
                  vehicle_codes: List[int],
-                 detection_confidence_threshold: float):
+                 detection_confidence_threshold: float,
+                 video_editor: IRescaler):
         self._model = model
+        self._video_editor = video_editor
         self._max_batch_size = max_batch_size
         self._on_batch_processed = on_batch_processed
         self.detection_confidence_threshold = detection_confidence_threshold
@@ -30,13 +34,11 @@ class VideoProcessor(IVideoProcessor):
 
     def start_processing(self, cap: cv2.VideoCapture):
         ret, frame = cap.read()
+        frame = self._video_editor.rescale(frame)
         frame_nmr = 1
         while ret or frame_nmr == 0:
-            start_time = time.time()
-
-            regions_of_interest = self._find_regions(frame)
-            print(f"Regions of interest on frame {frame_nmr} were found and tracked. Time elapsed:"
-                  f"{time.time() - start_time} seconds")
+            with Timer(f"Regions of interest on frame {frame_nmr} were found and tracked."):
+                regions_of_interest = self._find_regions(frame)
 
             vehicles = [Vehicle(x1, y1, x2, y2, track_id) for (x1, y1, x2, y2, score, class_id, track_id)
                         in self._find_vehicles(regions_of_interest)]
@@ -46,6 +48,7 @@ class VideoProcessor(IVideoProcessor):
                 self._refresh_batch()
 
             ret, frame = cap.read()
+            frame = self._video_editor.rescale(frame)
             frame_nmr += 1
 
         self._refresh_batch()

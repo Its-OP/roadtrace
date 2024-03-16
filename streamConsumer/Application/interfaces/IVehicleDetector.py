@@ -1,8 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import List
-
-import cv2
-
 from Application.Region import Region
 
 
