@@ -1,3 +1,4 @@
+import msgpack
 import pika
 from pika.credentials import PlainCredentials
 
@@ -27,6 +28,7 @@ class RabbitMQConsumer:
 
     def _callback(self, ch: pika.channel.Channel, method: pika.spec.Basic.Deliver,
                   properties: pika.spec.BasicProperties, body: bytes):
+        dict = msgpack.unpackb(body, raw=False, strict_map_key=False)
         print(f'Received {len(body)} bytes from {method.delivery_tag}')
         ch.basic_ack(delivery_tag=method.delivery_tag)
 

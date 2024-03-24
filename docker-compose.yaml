@@ -13,7 +13,20 @@ services:
     volumes:
       - "rabbitmq_data:/var/lib/rabbitmq"
 
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+
 
 volumes:
   rabbitmq_data:
     driver: local
+  local_pgdata:
