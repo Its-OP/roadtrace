@@ -4,8 +4,12 @@ from domain.Region import Region
 
 
 class Vehicle:
-    def __init__(self, local_tracking_id: str, color: str | None, model: str | None,
-                 state: str | None, regions: List[Region], id: int | None = None):
+    def __init__(self, local_tracking_id: str,
+                 regions: List[Region],
+                 color: str | None = None,
+                 model: str | None = None,
+                 state: str | None = None,
+                 id: int | None = None):
         self._id: int = id
         self._local_tracking_id: str = local_tracking_id
         self._regions: List[Region] = regions

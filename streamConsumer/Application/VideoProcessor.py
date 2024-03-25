@@ -43,7 +43,7 @@ class VideoProcessor(IVideoProcessor):
                         in self._find_vehicles(regions_of_interest)]
             self._processing_results.append(FrameProcessingResultRich(frame_nmr, vehicles, frame))
 
-            if len(self._processing_results) > self._max_batch_size:
+            if len(self._processing_results) >= self._max_batch_size:
                 self._refresh_batch()
 
             ret, frame = cap.read()

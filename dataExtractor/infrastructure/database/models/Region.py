@@ -12,7 +12,8 @@ class Region(Base):
     y1 = Column(Integer, nullable=False)
     x2 = Column(Integer, nullable=False)
     y2 = Column(Integer, nullable=False)
-    vehicle_external_id = Column(String, ForeignKey('vehicles.external_id'), nullable=False)
+    vehicle_id = Column(Integer, ForeignKey('vehicles.id'), nullable=False)
+    frame_id = Column(String, nullable=False)
 
     @property
     def vehicle(self):
@@ -23,4 +24,8 @@ class Region(Base):
 
     @staticmethod
     def from_domain(domain_region: DomainRegion):
-        return Region(x1=domain_region.x1, y1=domain_region.y1, x2=domain_region.x2, y2=domain_region.y2)
+        return Region(x1=domain_region.x1,
+                      y1=domain_region.y1,
+                      x2=domain_region.x2,
+                      y2=domain_region.y2,
+                      frame_id=domain_region.frame_id)

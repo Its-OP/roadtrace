@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
 from domain.Vehicle import Vehicle as DomainVehicle
+from . import Region
 
 from .Base import Base
 
@@ -21,5 +22,8 @@ class Vehicle(Base):
 
     @staticmethod
     def from_domain(domain_vehicle: DomainVehicle):
-        return Vehicle(id=domain_vehicle.id, external_id=domain_vehicle.local_tracking_id, color=domain_vehicle.color,
-                       model=domain_vehicle.model, state=domain_vehicle.state, regions=domain_vehicle.regions)
+        return Vehicle(id=domain_vehicle.id,
+                       external_id=domain_vehicle.local_tracking_id,
+                       color=domain_vehicle.color,
+                       model=domain_vehicle.model,
+                       state=domain_vehicle.state)
