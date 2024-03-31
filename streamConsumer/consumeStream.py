@@ -1,10 +1,14 @@
 import os
+import time
 from typing import List
 
 import cv2
 import torch
 import ultralytics
+from redis.client import Redis
+from redis.exceptions import ResponseError
 
+from Application.entities.FrameProcessingResultLight import FrameProcessingResultLight
 from Application.entities.FrameProcessingResultRich import FrameProcessingResultRich
 from Infrastructure.VideoEditor import VideoEditor
 from Application.VideoProcessor import VideoProcessor
@@ -40,6 +44,31 @@ print("Total frames: " + str(frame_count))
 video_editor = VideoEditor((frame_w, frame_h), (1920, 1088), fps)
 publisher = RabbitMQPublisher()
 
+# init Redis
+ts_conn = Redis(host='localhost', port=6379, db=0)
+rts_client = ts_conn.ts()
+metadata_client = Redis(host='localhost', port=6379, db=1)
+rts_key_name = 'rts:cam1'
+metadata_key_prefix = 'meta:cam1'
+
+metadata_client.flushall()
+
+try:
+    # Attempt to create the time series
+    rts_client.create(rts_key_name)
+    print(f"Time series '{rts_key_name}' created successfully.")
+except ResponseError as e:
+    if "already exists" in str(e):
+        print(f"Time series '{rts_key_name}' already exists, proceeding without creating.")
+    else:
+        # Handle other unexpected errors
+        print(f"An unexpected error occurred: {e}")
+
+
+def on_frame_processed(result: FrameProcessingResultLight) -> None:
+    rts_client.add(rts_key_name, '*', result.frame_number)
+    metadata_client.lpush(f"{metadata_key_prefix}:{result.frame_number}", *result.vehicles_compacted)
+
 
 def on_batch_processed(results: List[FrameProcessingResultRich]) -> None:
     raw_frames = [result.frame for result in results]
@@ -48,6 +77,6 @@ def on_batch_processed(results: List[FrameProcessingResultRich]) -> None:
     publisher.send_message(message)
 
 
-video_processor = VideoProcessor(model, 30, on_batch_processed, VEHICLE_CODES, 0.5, video_editor)
+video_processor = VideoProcessor(model, 30, on_frame_processed, on_batch_processed, VEHICLE_CODES, 0.5, video_editor)
 publisher.start()
 video_processor.start_processing(cap)

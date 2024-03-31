@@ -15,8 +15,7 @@ class FrameMessage(IMessage):
         packed_message: bytes = msgpack.packb({
             'video': self._compressed_frames,
             'results': {
-                r.frame_number: [{ 'x1': v.x1, 'y1': v.y1, 'x2': v.x2, 'y2': v.y2, 'track_id': v.track_id } for v in
-                                 r.vehicles] for r in self._processing_results
+                r.frame_number: r.vehicles_compacted for r in self._processing_results
             }
         })
 

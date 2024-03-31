@@ -6,6 +6,7 @@ import numpy as np
 import ultralytics
 from ultralytics import YOLO
 
+from Application.entities.FrameProcessingResultLight import FrameProcessingResultLight
 from Application.entities.FrameProcessingResultRich import FrameProcessingResultRich
 from Application.entities.Region import Region
 from Application.Timer import Timer
@@ -18,6 +19,7 @@ class VideoProcessor(IVideoProcessor):
     def __init__(self,
                  model: YOLO,
                  max_batch_size: int,
+                 on_frame_processed: Callable[[FrameProcessingResultLight], None],
                  on_batch_processed: Callable[[List[FrameProcessingResultRich]], None],
                  vehicle_codes: List[int],
                  detection_confidence_threshold: float,
@@ -25,6 +27,7 @@ class VideoProcessor(IVideoProcessor):
         self._model = model
         self._video_editor = video_editor
         self._max_batch_size = max_batch_size
+        self._on_frame_processed = on_frame_processed
         self._on_batch_processed = on_batch_processed
         self.detection_confidence_threshold = detection_confidence_threshold
         self._vehicle_codes = vehicle_codes
@@ -41,6 +44,8 @@ class VideoProcessor(IVideoProcessor):
 
             vehicles = [Vehicle(x1, y1, x2, y2, track_id) for (x1, y1, x2, y2, score, class_id, track_id)
                         in self._find_vehicles(regions_of_interest)]
+            results = FrameProcessingResultRich(frame_nmr, vehicles, frame)
+            self._on_frame_processed(results)
             self._processing_results.append(FrameProcessingResultRich(frame_nmr, vehicles, frame))
 
             if len(self._processing_results) >= self._max_batch_size:

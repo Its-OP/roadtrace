@@ -1,0 +1,13 @@
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\bin\Debug\net8.0\Analytics.deps.json
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\bin\Debug\net8.0\Analytics.dll
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\bin\Debug\net8.0\Analytics.pdb
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\obj\Debug\net8.0\Analytics.csproj.AssemblyReference.cache
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\obj\Debug\net8.0\Analytics.GeneratedMSBuildEditorConfig.editorconfig
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\obj\Debug\net8.0\Analytics.AssemblyInfoInputs.cache
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\obj\Debug\net8.0\Analytics.AssemblyInfo.cs
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\obj\Debug\net8.0\Analytics.csproj.CoreCompileInputs.cache
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\obj\Debug\net8.0\Analytics.sourcelink.json
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\obj\Debug\net8.0\Analytics.dll
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\obj\Debug\net8.0\refint\Analytics.dll
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\obj\Debug\net8.0\Analytics.pdb
+C:\!University\Undergrad Project\roadtrace\realTimeAnalytics\Analytics\obj\Debug\net8.0\ref\Analytics.dll

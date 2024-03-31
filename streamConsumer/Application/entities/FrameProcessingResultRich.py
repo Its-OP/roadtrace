@@ -4,6 +4,6 @@ import numpy as np
 from Application.entities.FrameProcessingResultLight import FrameProcessingResultLight
 
 
-@dataclass(frozen=True)
+@dataclass
 class FrameProcessingResultRich(FrameProcessingResultLight):
     frame: np.ndarray
