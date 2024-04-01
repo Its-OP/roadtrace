@@ -4,5 +4,12 @@ namespace Analytics;
 
 public static class RedisConnectionManager
 {
-    public static ConnectionMultiplexer Connection { get; } = ConnectionMultiplexer.Connect("localhost");
+    private static string GetConnectionString()
+    {
+        return $"{Environment.GetEnvironmentVariable("REDIS_HOST") ?? string.Empty},"
+               + $"abortConnect={false},"
+               + "connectRetry=5";
+    }
+    
+    public static ConnectionMultiplexer Connection { get; } = ConnectionMultiplexer.Connect(GetConnectionString());
 }

@@ -33,6 +33,18 @@ services:
       - rabbitmq
     env_file:
       - .env
+  
+  analytics:
+    container_name: 'analytics'
+    build:
+      context: './realTimeAnalytics'
+    depends_on:
+      - stream-consumer
+      - redis
+    ports:
+      - 5000:80
+    env_file:
+      - .env
 
   rabbitmq:
     container_name: 'rabbitmq'
