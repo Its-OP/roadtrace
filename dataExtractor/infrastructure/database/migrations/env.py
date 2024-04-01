@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -23,8 +24,8 @@ target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+section = config.config_ini_section
+config.set_section_option(section, "HOST", os.environ.get("POSTGRES_HOST"))
 
 
 def run_migrations_offline() -> None:

@@ -1,3 +1,4 @@
+import json
 from collections import defaultdict
 from typing import List, Dict
 
@@ -16,7 +17,7 @@ class FrameMessage:
     def _unpack_message(body: bytes) -> List[Vehicle]:
         vehicles: Dict[int, Vehicle | None] = defaultdict(lambda: None)
         results: Dict[int, List[RegionContract]] = \
-            { int(frame_id): [RegionContract(**region) for region in frame_regions]
+            { int(frame_id): [RegionContract(**json.loads(region_json)) for region_json in frame_regions]
               for frame_id, frame_regions in msgpack.unpackb(body, raw=False, strict_map_key=False)['results'].items() }
 
         for frame_id, regions in results.items():

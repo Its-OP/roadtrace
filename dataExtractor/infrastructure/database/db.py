@@ -11,8 +11,8 @@ from infrastructure.database.models.Base import Base
 
 
 class UnitOfWork:
-    def __init__(self):
-        self._DATABASE_URI = 'postgresql://admin:admin@localhost:5432/roadtrace'
+    def __init__(self, host):
+        self._DATABASE_URI = f'postgresql://admin:admin@{host}:5432/roadtrace'
         engine = create_engine(self._DATABASE_URI, echo=True)
         Base.metadata.bind = engine
         self._engine = engine

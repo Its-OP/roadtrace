@@ -22,6 +22,17 @@ services:
       - rabbitmq
     env_file:
       - .env
+  
+  data-extractor:
+    container_name: 'data-extractor'
+    build:
+      context: './dataExtractor'
+    depends_on:
+      - stream-consumer
+      - postgres
+      - rabbitmq
+    env_file:
+      - .env
 
   rabbitmq:
     container_name: 'rabbitmq'
@@ -32,7 +43,7 @@ services:
       - "5672:5672" # RabbitMQ server
       - "15672:15672" # Management interface
     volumes:
-      - "./streamConsumer/Artifacts:/usr/src/Artifacts"
+      - "rabbitmq_data:/var/lib/rabbitmq"
 
   postgres:
     image: postgres

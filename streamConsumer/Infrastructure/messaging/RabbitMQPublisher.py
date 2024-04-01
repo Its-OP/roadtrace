@@ -1,8 +1,10 @@
 import logging
 import queue
+import time
 
 import pika
-from pika.exceptions import AMQPError
+from pika import ConnectionParameters, BlockingConnection
+from pika.exceptions import AMQPError, AMQPConnectionError
 
 from Application.interfaces.messaging.IMessagePublisher import IMessagePublisher
 
@@ -11,14 +13,53 @@ class RabbitMQPublisher(IMessagePublisher):
     def __init__(self, queue_name='frames', host='localhost'):
         super().__init__()
         self.queue_name = queue_name
+        self._host = host
 
         # Configure logging
-        logging.basicConfig(level=logging.ERROR, format='%(asctime)s:%(levelname)s:%(message)s')
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
+
+    def _create_connection_with_retry(self,
+                                      connection_parameters: ConnectionParameters,
+                                      max_retries=5,
+                                      initial_wait=1.0,
+                                      backoff_factor=2) -> BlockingConnection | None:
+        """
+        Attempts to create a Pika blocking connection with exponential backoff.
+
+        Parameters:
+        - max_retries: Maximum number of retry attempts.
+        - initial_wait: Initial wait time in seconds before retrying after the first failure.
+        - backoff_factor: Factor by which the wait time increases after each failure.
+
+        Returns:
+        - A pika blocking connection if successful, None otherwise.
+        """
+        attempt = 0
+        wait_time = initial_wait
+
+        while attempt < max_retries:
+            try:
+                # Attempt to establish the connection
+                connection = pika.BlockingConnection(connection_parameters)
+                logging.info(f"Successfully connected to RabbitMQ on attempt {attempt + 1}")
+                return connection
+            except pika.exceptions.AMQPConnectionError as e:
+                logging.warning(f"Connection attempt {attempt + 1} failed. Retrying in {wait_time} seconds...")
+                time.sleep(wait_time)
+                attempt += 1
+                wait_time *= backoff_factor  # Increase the wait time exponentially
+
+        logging.error("Failed to connect to RabbitMQ after max retries.")
+        return None
 
     def run(self) -> None:
         try:
             credentials = pika.PlainCredentials('user', 'password')
-            connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', credentials=credentials))
+            parameters = pika.ConnectionParameters(host=self._host, credentials=credentials)
+            connection = self._create_connection_with_retry(parameters)
+            if connection is None:
+                raise AMQPConnectionError()
+
             channel = connection.channel()
             channel.queue_declare(queue=self.queue_name)
 
