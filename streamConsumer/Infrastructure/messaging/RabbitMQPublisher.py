@@ -8,7 +8,7 @@ from Application.interfaces.messaging.IMessagePublisher import IMessagePublisher
 
 
 class RabbitMQPublisher(IMessagePublisher):
-    def __init__(self, queue_name='frames'):
+    def __init__(self, queue_name='frames', host='localhost'):
         super().__init__()
         self.queue_name = queue_name
 

@@ -1,0 +1,9 @@
+opencv-python~=4.9.0.80
+numpy~=1.26.4
+ultralytics~=8.1.24
+msgpack~=1.0.8
+pika~=1.3.2
+av~=11.0.0
+-f https://download.pytorch.org/whl/cu121
+torch
+redis~=5.1.0b4

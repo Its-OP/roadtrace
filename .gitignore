@@ -8,3 +8,4 @@ src/consumer/artifacts
 src/processor/img
 **/export/*.json
 **/import
+**/obj

@@ -1,27 +1,46 @@
 version: '3.9'
 
 services:
+  stream-consumer:
+    container_name: 'stream-consumer'
+    build:
+      context: './streamConsumer'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+                - utility
+                - compute
+    volumes:
+      - ./streamConsumer/Artifacts:/usr/src/Artifacts
+    depends_on:
+      - redis
+      - rabbitmq
+    env_file:
+      - .env
+
   rabbitmq:
     container_name: 'rabbitmq'
     image: "rabbitmq:3-management"
-    environment:
-      RABBITMQ_DEFAULT_USER: "user"
-      RABBITMQ_DEFAULT_PASS: "password"
+    env_file:
+      - .env
     ports:
       - "5672:5672" # RabbitMQ server
       - "15672:15672" # Management interface
     volumes:
-      - "rabbitmq_data:/var/lib/rabbitmq"
+      - "./streamConsumer/Artifacts:/usr/src/Artifacts"
 
   postgres:
     image: postgres
     container_name: postgres
-    restart: always
     ports:
       - 5432:5432
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+    env_file:
+      - .env
     volumes:
       - local_pgdata:/var/lib/postgresql/data
   

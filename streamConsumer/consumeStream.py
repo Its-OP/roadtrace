@@ -21,7 +21,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # Read env variables
 VEHICLE_CODES = [int(x) for x in os.environ['VEHICLE_CODES'].split(',')]
 TAKE_VIDEO_FROM = os.environ['TAKE_VIDEO_FROM']
-EXPORT_FRAMES_TO = os.environ['EXPORT_FRAMES_TO']
+REDIS_HOST = os.environ['REDIS_HOST']
+RABBITMQ_HOST = os.environ['RABBITMQ_HOST']
 
 # load models
 model = ultralytics.YOLO('Artifacts/models/yolov8s.pt')
@@ -42,12 +43,12 @@ print("Total frames: " + str(frame_count))
 
 # init services
 video_editor = VideoEditor((frame_w, frame_h), (1920, 1088), fps)
-publisher = RabbitMQPublisher()
+publisher = RabbitMQPublisher(host=RABBITMQ_HOST)
 
 # init Redis
-ts_conn = Redis(host='localhost', port=6379, db=0)
+ts_conn = Redis(host=REDIS_HOST, port=6379, db=0)
 rts_client = ts_conn.ts()
-metadata_client = Redis(host='localhost', port=6379, db=1)
+metadata_client = Redis(host=REDIS_HOST, port=6379, db=1)
 rts_key_name = 'rts:cam1'
 metadata_key_prefix = 'meta:cam1'
 
