@@ -1,4 +1,4 @@
-name: Publish dataExtractor
+name: Publish realTimeAnalytics
 
 on:
   push:
