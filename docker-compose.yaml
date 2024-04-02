@@ -3,8 +3,7 @@ version: '3.9'
 services:
   stream-consumer:
     container_name: 'stream-consumer'
-    build:
-      context: './streamConsumer'
+    image: "itsop/roadtrace-stream-consumer:latest"
     deploy:
       resources:
         reservations:
@@ -25,8 +24,7 @@ services:
   
   data-extractor:
     container_name: 'data-extractor'
-    build:
-      context: './dataExtractor'
+    image: "itsop/roadtrace-data-extractor:latest"
     depends_on:
       - stream-consumer
       - postgres
@@ -36,8 +34,7 @@ services:
   
   analytics:
     container_name: 'analytics'
-    build:
-      context: './realTimeAnalytics'
+    image: "itsop/roadtrace-analytics:latest"
     depends_on:
       - stream-consumer
       - redis
