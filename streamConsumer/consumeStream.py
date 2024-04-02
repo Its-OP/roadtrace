@@ -81,5 +81,4 @@ def on_batch_processed(results: List[FrameProcessingResultRich]) -> None:
 video_processor = VideoProcessor(model, 30, on_frame_processed, on_batch_processed, VEHICLE_CODES, 0.5, video_editor)
 publisher.start()
 
-time.sleep(8)
 video_processor.start_processing(cap)
