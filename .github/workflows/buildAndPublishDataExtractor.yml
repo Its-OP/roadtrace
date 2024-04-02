@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-        - 'streamConsumer/**'
+        - 'dataExtractor/**'
   workflow_dispatch:
 
 jobs:
@@ -34,8 +34,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
-          context: ./streamConsumer
-          file: ./streamConsumer/Dockerfile
+          context: ./dataExtractor
+          file: ./dataExtractor/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ env.REPOSITORY_NAME }}:latest
