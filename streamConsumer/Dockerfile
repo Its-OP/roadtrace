@@ -4,8 +4,8 @@ FROM python:3.12
 # Set the working directory in the container.
 WORKDIR /usr/src
 
-# Copy the current directory contents into the container at /usr/src.
-COPY . .
+# Copy only the requirements.txt file initially.
+COPY requirements.txt .
 
 # Install system dependencies required by your project.
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 -y
@@ -17,6 +17,11 @@ ENV PATH="/usr/src/venv/bin:$PATH"
 
 # Install Python dependencies in the virtual environment.
 RUN pip install --no-cache-dir -r requirements.txt
+
+# After the dependencies have been installed, copy the rest of the application code.
+# This line should be placed just before the command to start your application.
+# It ensures that changes in your application code do not invalidate the cached layers of installed dependencies.
+COPY . .
 
 # Launch the application using the virtual environment's Python interpreter.
 CMD ["python", "./consumeStream.py"]

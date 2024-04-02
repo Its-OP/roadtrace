@@ -17,8 +17,10 @@ services:
     volumes:
       - ./streamConsumer/Artifacts:/usr/src/Artifacts
     depends_on:
-      - redis
-      - rabbitmq
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     env_file:
       - .env
   
@@ -26,9 +28,10 @@ services:
     container_name: 'data-extractor'
     image: "itsop/roadtrace-data-extractor:latest"
     depends_on:
-      - stream-consumer
-      - postgres
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     env_file:
       - .env
   
@@ -36,8 +39,8 @@ services:
     container_name: 'analytics'
     image: "itsop/roadtrace-analytics:latest"
     depends_on:
-      - stream-consumer
-      - redis
+      redis:
+        condition: service_healthy
     ports:
       - 5000:80
     env_file:
@@ -46,6 +49,11 @@ services:
   rabbitmq:
     container_name: 'rabbitmq'
     image: "rabbitmq:3-management"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     env_file:
       - .env
     ports:
@@ -55,8 +63,13 @@ services:
       - "rabbitmq_data:/var/lib/rabbitmq"
 
   postgres:
-    image: postgres
     container_name: postgres
+    image: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - 5432:5432
     env_file:
@@ -65,8 +78,13 @@ services:
       - local_pgdata:/var/lib/postgresql/data
   
   redis:
-    image: redislabs/redistimeseries:latest
     container_name: redis
+    image: redislabs/redistimeseries:latest
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "6379:6379"
     volumes:
