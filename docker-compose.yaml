@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3.8'
 
 services:
   stream-consumer:
@@ -23,9 +23,11 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    networks:
+      - rabbitmq_network
+      - redis_network
   
   data-extractor:
-    container_name: 'data-extractor'
     image: "itsop/roadtrace-data-extractor:latest"
     depends_on:
       postgres:
@@ -34,6 +36,9 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    networks:
+      - rabbitmq_network
+      - postgres_network
   
   analytics:
     container_name: 'analytics'
@@ -45,6 +50,8 @@ services:
       - 5000:80
     env_file:
       - .env
+    networks:
+      - redis_network
 
   rabbitmq:
     container_name: 'rabbitmq'
@@ -61,6 +68,8 @@ services:
       - "15672:15672" # Management interface
     volumes:
       - "rabbitmq_data:/var/lib/rabbitmq"
+    networks:
+      - rabbitmq_network
 
   postgres:
     container_name: postgres
@@ -76,6 +85,8 @@ services:
       - .env
     volumes:
       - local_pgdata:/var/lib/postgresql/data
+    networks:
+      - postgres_network
   
   redis:
     container_name: redis
@@ -89,6 +100,8 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    networks:
+      - redis_network
 
 
 volumes:
@@ -96,3 +109,11 @@ volumes:
     driver: local
   local_pgdata:
   redis-data:
+
+networks:
+  postgres_network:
+    driver: bridge
+  redis_network:
+    driver: bridge
+  rabbitmq_network:
+    driver: bridge

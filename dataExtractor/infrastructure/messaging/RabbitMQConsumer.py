@@ -1,6 +1,7 @@
 import logging
 import time
 import traceback
+from typing import List
 
 import pika
 from pika.adapters.blocking_connection import BlockingConnection
@@ -12,21 +13,23 @@ from sqlalchemy.orm import Session
 from infrastructure.database.db import UnitOfWork
 from infrastructure.database.models import Vehicle, Region
 from infrastructure.messaging.FrameMessage import FrameMessage
+from services.BaseService import BaseService
 
 
 class RabbitMQConsumer:
-    def __init__(self, queue_name: str, uow: UnitOfWork, host='localhost'):
+    def __init__(self, queue_name: str, uow: UnitOfWork, services: List[BaseService], host='localhost'):
         self.queue_name = queue_name
         self.connection = None
         self.channel = None
         self._uow = uow
         self._host = host
+        self._services = services
         logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
     def _setup_channel(self):
         # Establish a connection with RabbitMQ server
         credentials = PlainCredentials('user', 'password')
-        parameters = pika.ConnectionParameters('rabbitmq', credentials=credentials)
+        parameters = pika.ConnectionParameters(self._host, credentials=credentials)
         try:
             self.connection = self._create_connection_with_retry(parameters)
             if self.connection is None:
@@ -64,6 +67,9 @@ class RabbitMQConsumer:
                     session.add(model_vehicle)
 
                 model_vehicle.regions.extend(model_regions)
+
+            for service in self._services:
+                service.process()
 
         print(f'Received {len(body)} bytes from {method.delivery_tag}')
         ch.basic_ack(delivery_tag=method.delivery_tag)

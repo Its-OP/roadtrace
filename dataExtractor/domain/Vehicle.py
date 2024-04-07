@@ -33,6 +33,10 @@ class Vehicle:
     def color(self) -> str | None:
         return self._color
 
+    @color.setter
+    def color(self, value):
+        self._color = value
+
     @property
     def model(self) -> str | None:
         return self._model
