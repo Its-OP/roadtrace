@@ -3,8 +3,8 @@ from typing import List, Dict, TypeVar, Generic
 
 import numpy as np
 
-from domain.Region import Region
-from domain.Vehicle import Vehicle
+from entities import Vehicle, Region
+
 Frame = np.ndarray
 
 TFeature = TypeVar('TFeature')
@@ -20,7 +20,7 @@ class BaseService(ABC, Generic[TFeature]):
         pass
 
     @abstractmethod
-    def _extract_feature(self, region: Region, frame: Frame) -> TFeature | None:
+    def _extract_feature(self, region: Region, preprocessed_frame: Frame) -> TFeature | None:
         pass
 
     @abstractmethod
@@ -28,18 +28,12 @@ class BaseService(ABC, Generic[TFeature]):
         pass
 
     def process(self, vehicles: List[Vehicle], frames: Dict[int, Frame]) -> List[Vehicle]:
-        preprocessed_frames: Dict[int, Frame] = {}
         for vehicle in vehicles:
-            if self._should_process_vehicle(vehicle):
+            if not self._should_process_vehicle(vehicle):
                 continue
-
             for region in vehicle.regions:
-                preprocessed_frame: Frame
-                if region.frame_id in preprocessed_frames:
-                    preprocessed_frame = preprocessed_frames[region.frame_id]
-                else:
-                    preprocessed_frame = self._preprocess_frame(frames[region.frame_id])
-                    preprocessed_frames[region.frame_id] = preprocessed_frame
+                sliced_frame = frames[region.frame_id][region.y1:region.y2, region.x1:region.x2]
+                preprocessed_frame = self._preprocess_frame(sliced_frame)
                 feature = self._extract_feature(region, preprocessed_frame)
                 if feature is not None:
                     self._update_vehicle(vehicle, feature)

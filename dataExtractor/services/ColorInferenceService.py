@@ -1,12 +1,11 @@
 import cv2
 import keras
 import numpy as np
-from keras import Sequential
+import tensorflow as tf
 from numpy.compat import long
 
-from domain.Region import Region
-from domain.Vehicle import Vehicle
-from services.BaseService import BaseService, Frame, TFeature
+from entities import Vehicle, Region
+from services.BaseService import BaseService, Frame
 
 
 class _ChannelValue:
@@ -15,23 +14,28 @@ class _ChannelValue:
 
 
 class ColorInferenceService(BaseService[str]):
-    def _update_vehicle(self, vehicle: Vehicle, feature: str):
-        vehicle.color = feature
+    color_codes = {0: 'black', 1: 'blue', 2: 'cyan', 3: 'gray', 4: 'green', 5: 'red', 6: 'white', 7: 'yellow'}
 
     def __init__(self, color_picker_model: keras.Sequential):
         self._model = color_picker_model
 
-    def _extract_feature(self, region: Region, frame: Frame) -> str | None:
-        color_code = self._model.predict(frame)
-        return color_code
+    def _update_vehicle(self, vehicle: Vehicle, feature: str):
+        vehicle.color = feature
+
+    def _extract_feature(self, region: Region, preprocessed_frame: Frame) -> str | None:
+        tensor = preprocessed_frame.reshape((1, 100, 100, 3))
+        prediction_tensor = self._model(tensor)
+        color_code: int = int(tf.argmax(prediction_tensor, axis=1).numpy()[0])
+        color_conf: float = prediction_tensor.numpy()[0][color_code]
+        return self.color_codes[color_code] if color_conf > 0.8 else None
 
     def _preprocess_frame(self, frame: Frame) -> np.ndarray:
-        rescaled_frame = cv2.resize(frame, (100, 100))
+        rescaled_frame = cv2.resize(frame, (100, 100), interpolation=cv2.INTER_AREA)
         light_intensity = self.__get_atmospheric_light_intensity(rescaled_frame)
         return self.__dehaze(rescaled_frame, light_intensity)
 
     def _should_process_vehicle(self, vehicle: Vehicle) -> bool:
-        return vehicle.color is not None
+        return vehicle.color is None
 
     def __get_atmospheric_light_intensity(self, img: np.ndarray) -> float:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

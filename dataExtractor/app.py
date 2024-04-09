@@ -3,8 +3,8 @@ import keras
 
 from sqlalchemy.orm import Session
 
+from entities import Region, Vehicle
 from infrastructure.database.db import UnitOfWork
-from infrastructure.database.models import Vehicle, Region
 from infrastructure.messaging.RabbitMQConsumer import RabbitMQConsumer
 from services.ColorInferenceService import ColorInferenceService
 
@@ -23,5 +23,5 @@ color_picker: keras.Sequential = keras.models.load_model('models/color_picker.h5
 
 color_inf_service = ColorInferenceService(color_picker)
 
-consumer = RabbitMQConsumer('frames', uow, RABBITMQ_HOST)
+consumer = RabbitMQConsumer('frames', uow, [color_inf_service], RABBITMQ_HOST)
 consumer.start_consuming()

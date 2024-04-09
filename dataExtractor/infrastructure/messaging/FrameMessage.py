@@ -8,8 +8,8 @@ import imageio
 import msgpack
 import numpy as np
 
-from domain.Region import Region
-from domain.Vehicle import Vehicle
+from dtos.VehicleDto import VehicleDto
+from entities import Region
 from infrastructure.contracts.RegionContract import RegionContract
 
 
@@ -20,8 +20,8 @@ class FrameMessage:
         self.frames = dict(self._unpack_frames(unpacked_data))
 
     @staticmethod
-    def _unpack_results(unpacked_data) -> List[Vehicle]:
-        vehicles: Dict[int, Vehicle | None] = defaultdict(lambda: None)
+    def _unpack_results(unpacked_data) -> List[VehicleDto]:
+        vehicles: Dict[int, VehicleDto | None] = defaultdict(lambda: None)
         results: Dict[int, List[RegionContract]] = \
             { int(frame_id): [RegionContract(**json.loads(region_json)) for region_json in frame_regions]
               for frame_id, frame_regions in unpacked_data['results'].items() }
@@ -30,7 +30,7 @@ class FrameMessage:
             for region in regions:
                 vehicle = vehicles[region.track_id]
                 if vehicle is None:
-                    vehicle = Vehicle(str(region.track_id), [])
+                    vehicle = VehicleDto(str(region.track_id), [])
                     vehicles[region.track_id] = vehicle
                 vehicle.regions.append(Region(region.x1, region.y1, region.x2, region.y2, frame_id))
 

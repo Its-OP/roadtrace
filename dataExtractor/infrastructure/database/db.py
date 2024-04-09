@@ -7,7 +7,7 @@ from alembic import command
 from sqlalchemy.orm import sessionmaker as Sessionmaker, Session
 from sqlalchemy_utils import database_exists, create_database
 
-from infrastructure.database.models.Base import Base
+from entities.Base import Base
 
 
 class UnitOfWork:
