@@ -15,7 +15,7 @@ class Vehicle(Base):
                  regions: List[Region],
                  color: str | None = None,
                  model: str | None = None,
-                 state: str | None = None,
+                 make: str | None = None,
                  id: int | None = None,
                  **kw: Any):
         super().__init__(**kw)
@@ -23,12 +23,12 @@ class Vehicle(Base):
         self.external_id: str = external_id
         self.color: str | None = color
         self.model: str | None = model
-        self.state: str | None = state
+        self.make: str | None = make
         self.regions = regions
 
     id = Column(Integer, primary_key=True)
     external_id = Column(String, nullable=False, unique=True)
     color = Column(String, nullable=True)
     model = Column(String, nullable=True)
-    state = Column(String, nullable=True)
+    make = Column(String, nullable=True)
     regions = relationship('Region', backref='vehicle', lazy=True)
