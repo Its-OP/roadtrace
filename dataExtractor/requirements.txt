@@ -14,3 +14,6 @@ torch~=2.2.2+cu121
 pandas~=2.2.2
 torchvision~=0.17.2+cu121
 pillow~=10.3.0
+fastapi~=0.110.2
+GeoAlchemy2~=0.15.0
+pydantic~=2.7.1
