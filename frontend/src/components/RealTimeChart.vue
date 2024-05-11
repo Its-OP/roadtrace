@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue';
 import { DataPoint } from '../schemas/schemas.ts';
-import {data} from "autoprefixer";
 
 // Helper function to generate random values between min and max
 function generateRandomValue(min: number, max: number): number {
@@ -16,9 +15,13 @@ const dataPoints = ref<DataPoint[]>([
   { date: new Date(startDate.getTime() + 2000), value: generateRandomValue(5, 15) },
 ]);
 
+const dataIsSufficient = () => dataPoints.value.length >= 5;
+
 const series = ref([{
   name: "Values",
-  data: dataPoints.value.map(dp => ({ x: dp.date.toISOString().split('T')[0] + ' ' + dp.date.toTimeString().split(' ')[0], y: dp.value }))
+  data: dataIsSufficient()
+    ? dataPoints.value.map(dp => ({ x: dp.date.toISOString().split('T')[0] + ' ' + dp.date.toTimeString().split(' ')[0], y: dp.value }))
+    : []
 }]);
 
 const intervalId = setInterval(() => {
@@ -66,6 +69,16 @@ const chartOptions = {
       }
     }
   },
+  noData: {
+    text: 'Insufficient data to display the chart',
+    align: 'center',
+    verticalAlign: 'middle',
+    offsetX: 0,
+    offsetY: 0,
+    style: {
+      fontSize: '16px',
+    }
+  },
   title: {
     text: 'Vehicles count per second',
     align: 'center',
@@ -77,16 +90,7 @@ const chartOptions = {
   xaxis: {
     type: 'datetime',
     labels: {
-      formatter: function(value) {
-        return new Date(value).toISOString().split('T')[0] + ' ' + new Date(value).toTimeString().split(' ')[0];
-      },
-      datetimeFormatter: {
-        year: 'yyyy',
-        month: 'MMM \'yy',
-        day: 'dd MMM',
-        hour: 'HH:mm',
-        minute: 'HH:mm:ss'
-      }
+      format: 'HH:mm:ss'
     }
   },
   yaxis: {
@@ -103,7 +107,7 @@ const chartOptions = {
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow-md p-4">
-    <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
+  <div class="bg-white rounded-lg shadow-md pl-4 pr-4 pt-4">
+    <apexchart type="line" height="320" :options="chartOptions" :series="series"></apexchart>
   </div>
 </template>

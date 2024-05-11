@@ -12,11 +12,13 @@
     { date: new Date('2024-04-24'), value: 107 }
   ]);
 
+  const dataIsSufficient = () => dataPoints.value.length >= 5;
+
   const series = [{
     name: "Values",
-    data: dataPoints.value.map(dp => ({ x: dp.date.toISOString().split('T')[0], y: dp.value }))
+    data: dataIsSufficient() ? dataPoints.value.map(dp => ({ x: dp.date.toISOString().split('T')[0], y: dp.value })) : []
   }];
-
+  
   const chartOptions = {
     chart: {
       type: 'line',
@@ -34,6 +36,16 @@
           pan: false,
           reset: false
         }
+      },
+    },
+    noData: {
+      text: 'Insufficient data to display the chart',
+      align: 'center',
+      verticalAlign: 'middle',
+      offsetX: 0,
+      offsetY: 0,
+      style: {
+        fontSize: '16px',
       }
     },
     title: {
@@ -61,7 +73,7 @@
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow-md p-4">
-    <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
+  <div class="bg-white rounded-lg shadow-md pl-4 pr-4 pt-4">
+    <apexchart type="line" height="320" :options="chartOptions" :series="series"></apexchart>
   </div>
 </template>

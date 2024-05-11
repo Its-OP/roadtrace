@@ -29,6 +29,7 @@
   };
   
   const onMapClick = (event: mapboxgl.MapMouseEvent): void => {
+    event.preventDefault();
     const marker: Marker = {
       id: -1,
       coordinates: {
@@ -55,7 +56,7 @@
     :zoom="12"
     :center="[mapCenter.lng, mapCenter.lat]"
     map-style="mapbox://styles/itsop/clvmljz4901kf01qu3ps6hzs3"
-    @mb-click="onMapClick"
+    @mb-dblclick="onMapClick"
     @mb-load="event => onMapCreated(event.target)"
   >
     <MapboxMarker v-for="marker in markers"
