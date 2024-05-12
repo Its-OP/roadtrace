@@ -3,25 +3,36 @@
   import WeeklyChart from "./WeeklyChart.vue";
   import RealTimeChart from "./RealTimeChart.vue";
   import {ref} from "vue";
-
+  import {Marker} from "../schemas/latLong.ts";
+  import MarkerInfo from "./MarkerInfo.vue";
+  
+  interface Props {
+    marker: Marker | null
+  };
+  
+  const props = defineProps<Props>();
   const selectedChart = ref('week');
+  
 </script>
 
 <template>
-  <div class="h-full w-full z-[1] bg-slate-500 p-2 flex flex-col items-center">
-    <div class="flex-1"> <!-- Content that might be above the chart -->
-      <!-- Other sidebar content goes here -->
+  <div class="w-full h-full z-[1] bg-slate-500 p-2 overflow-y-auto overflow-x-hidden scrollbar-track-black">
+    <div class="max-w-full w-full">
+      <MarkerInfo :marker="props.marker" />
     </div>
-    <div class="max-w-full w-full mt-3">
-      <RealTimeChart />
-    </div>
-    <v-btn-toggle v-model="selectedChart" mandatory rounded class="mt-3">
-      <v-btn value="week">Week</v-btn>
-      <v-btn value="month">Month</v-btn>
-    </v-btn-toggle>
-    <div class="max-w-full w-full mt-3">
-      <WeeklyChart v-if="selectedChart === 'week'" />
-      <MonthlyChart v-else-if="selectedChart === 'month'" />
+    <div id="charts" class="bg-white rounded-lg max-w-full w-full flex flex-col justify-center mt-3 pb-1.5">
+      <h1 class="font-charts text-xl text-center font-bold">Charts</h1>
+      <div class="max-w-full w-full mt-1">
+        <RealTimeChart />
+      </div>
+      <v-btn-toggle v-model="selectedChart" mandatory rounded class="mt-3 grid grid-flow-col justify-stretch">
+        <v-btn value="week" class="h-12">Week</v-btn>
+        <v-btn value="month" class="h-12">Month</v-btn>
+      </v-btn-toggle>
+      <div class="max-w-full w-full mt-3">
+        <WeeklyChart v-if="selectedChart === 'week'" />
+        <MonthlyChart v-else-if="selectedChart === 'month'" />
+      </div>
     </div>
   </div>
 </template>

@@ -2,22 +2,27 @@
 import Map from "../components/Map.vue";
 import Sidebar from "../components/Sidebar.vue";
 import {ref} from "vue";
-import {Marker} from "../schemas/schemas.ts";
+import {LatLong, Marker} from "../schemas/latLong.ts";
 
 const markers = ref<Marker[]>([
-  { id: 1, coordinates: { lng: -71.214518, lat: 42.203995 }, dirty: false },
-  { id: 2, coordinates: { lng: -71.234518, lat: 42.2203995 }, dirty: false },
-  { id: 3, coordinates: { lng: -71.254518, lat: 42.2403995 }, dirty: false },
+  { id: 1, coordinates: { lng: -71.214518, lat: 42.203995 }, source: 'test', dirty: false },
+  { id: 2, coordinates: { lng: -71.234518, lat: 42.2203995 }, source: 'test', dirty: false },
+  { id: 3, coordinates: { lng: -71.254518, lat: 42.2403995 }, source: 'test', dirty: false },
 ]);
 
 const handleUpdateMarker = (marker: Marker): void => {
-  console.log('handle update')
   const markerIndex = markers.value.findIndex(m => m.id === marker.id);
   markers.value.splice(markerIndex, 1, marker);
 }
 
-const handleAddMarker = (marker: Marker): void => {
-  marker.id = markers.value.length;
+const handleAddMarker = (markerLatLong: LatLong): void => {
+  const marker: Marker = {
+    id: markers.value.length,
+    coordinates: markerLatLong,
+    source: '',
+    dirty: true
+  };
+  
   markers.value.push(marker);
 }
 </script>
@@ -28,7 +33,7 @@ const handleAddMarker = (marker: Marker): void => {
       <Map :markers="markers" @addMarker="handleAddMarker" @updateMarker="handleUpdateMarker"/>
     </div>
     <div class="w-[30%]">
-      <Sidebar />
+      <Sidebar :marker="markers[0]" />
     </div>
   </div>
 </template>

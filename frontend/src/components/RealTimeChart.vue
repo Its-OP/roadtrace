@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue';
-import { DataPoint } from '../schemas/schemas.ts';
+import { DataPoint } from '../schemas/latLong.ts';
 
 // Helper function to generate random values between min and max
 function generateRandomValue(min: number, max: number): number {
@@ -107,7 +107,7 @@ const chartOptions = {
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow-md pl-4 pr-4 pt-4">
-    <apexchart type="line" height="320" :options="chartOptions" :series="series"></apexchart>
+  <div class="bg-gray-50 pl-4 pr-4 pt-1">
+    <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
   </div>
 </template>

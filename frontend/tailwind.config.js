@@ -6,8 +6,12 @@ export default {
   ],
   jit: true,
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        charts: ['Helvetica', 'Arial', 'sans-serif']
+      }
+    },
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar')],
 }
 

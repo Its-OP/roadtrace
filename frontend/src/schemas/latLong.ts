@@ -1,11 +1,12 @@
-export interface Schemas {
+export interface LatLong {
     lng: number,
     lat: number
 }
 
 export interface Marker {
     id: number,
-    coordinates: Schemas,
+    coordinates: LatLong,
+    source: string,
     dirty: boolean
 }
 

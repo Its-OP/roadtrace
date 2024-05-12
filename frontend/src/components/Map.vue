@@ -1,12 +1,12 @@
 <script setup lang="ts">
   import { MapboxMap, MapboxNavigationControl, MapboxMarker } from '@studiometa/vue-mapbox-gl';
   import 'mapbox-gl/dist/mapbox-gl.css';
-  import {Schemas, Marker} from "../schemas/schemas.ts";
+  import {LatLong, Marker} from "../schemas/latLong.ts";
   import * as mapboxgl from "mapbox-gl";
   import {ref} from "vue";
   const accessToken = "pk.eyJ1IjoiaXRzb3AiLCJhIjoiY2x2bWxnZXljMDM3NzJpcDFlMTAzeGh2bSJ9.FkHnP5wDLcyy7vrMosVxlA";
   
-  const mapCenter: Schemas = { lng: -71.224518, lat: 42.213995 };
+  const mapCenter: LatLong = { lng: -71.224518, lat: 42.213995 };
   const map = ref<mapboxgl.Map | null>(null);
   
   const emits = defineEmits(['addMarker', 'removeMarker', 'updateMarker']);
@@ -30,16 +30,12 @@
   
   const onMapClick = (event: mapboxgl.MapMouseEvent): void => {
     event.preventDefault();
-    const marker: Marker = {
-      id: -1,
-      coordinates: {
-        lat: event.lngLat.lat,
-        lng: event.lngLat.lng
-      },
-      dirty: true
-    };
+    const clickLatLong: LatLong = {
+      lat: event.lngLat.lat,
+      lng: event.lngLat.lng
+    }
     
-    emits('addMarker', marker);
+    emits('addMarker', clickLatLong);
   }
   
   const onMapCreated = (mapboxMap: mapboxgl.Map) => {

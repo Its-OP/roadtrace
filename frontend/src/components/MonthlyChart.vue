@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import {ref} from "vue";
-  import {DataPoint} from "../schemas/schemas.ts";
+  import {DataPoint} from "../schemas/latLong.ts";
 
   const dataPoints = ref<DataPoint[]>([
         { date: new Date('2024-04-30'), value: 110 },
@@ -87,7 +87,7 @@
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow-md p-4">
+  <div class="bg-gray-50 pl-4 pr-4 pt-1">
     <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
   </div>
 </template>
