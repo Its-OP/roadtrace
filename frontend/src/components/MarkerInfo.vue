@@ -28,8 +28,8 @@
   }
 
   const codeRules = [
-    v => v.length >= 4 || 'Code must be at least 4 characters',
-    v => v.length <= 64 || 'Code must be no more than 64 characters'
+    v => v.length >= 4 || 'Code must be at least 4 characters long',
+    v => v.length <= 64 || 'Code must be no more than 64 characters long'
   ];
   
   const urlRules = [
@@ -50,7 +50,7 @@
 </script>
 
 <template>
-  <v-container class="p-0">
+  <div class="bg-white rounded-lg max-w-full w-full pt-1.5">
     <v-form ref="form" v-model="valid">
       <v-text-field
           v-model="code"
@@ -61,7 +61,7 @@
           solo
           rounded="lg"
           @input="checkChanges"
-          bg-color="white"
+          class="ml-1 mr-1"
       ></v-text-field>
 
       <v-text-field
@@ -71,17 +71,18 @@
           required
           rounded="lg"
           @input="checkChanges"
-          bg-color="white"
+          class="ml-1 mr-1"
       ></v-text-field>
 
       <v-btn
           v-if="hasChanges && valid"
           @click="submitForm"
+          class="max-w-full w-full rounded-bl rounded-br"
       >
-        Submit
+        Update
       </v-btn>
     </v-form>
-  </v-container>
+  </div>
 </template>
 
 <style>
