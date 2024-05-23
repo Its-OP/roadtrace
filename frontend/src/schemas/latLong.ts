@@ -14,3 +14,12 @@ export interface DataPoint {
     date: Date,
     value: number
 }
+
+export interface User {
+    email: string;
+    role: string;
+    password?: string;
+    hasChanged?: boolean;
+}
+
+export const UserRoles = ['user', 'manager', 'administrator'];

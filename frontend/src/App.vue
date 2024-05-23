@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import MainView from "./views/MainView.vue";
+import UsersView from "./views/UsersView.vue";
 </script>
 
 <template>
-  <MainView />
+<!--  <MainView />-->
+  <UsersView />
 </template>
 
 <style>

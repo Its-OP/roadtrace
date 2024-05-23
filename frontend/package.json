@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@studiometa/vue-mapbox-gl": "^2.5.0",
+    "@types/toastr": "^2.1.43",
     "apexcharts": "^3.49.0",
     "mapbox-gl": "^3.3.0",
     "tailwind-scrollbar": "^3.1.0",
