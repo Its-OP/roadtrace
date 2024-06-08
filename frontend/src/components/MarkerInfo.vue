@@ -10,8 +10,8 @@
 
   const form = ref(null);
   const valid = ref(false);
-  const code = ref(props.marker?.source);
-  const source = ref(props.marker?.source);
+  const code = "camera1"; // ref(props.marker?.source);
+  const source = "https://kinesis.us-east-2.777788889999.stream" // ref(props.marker?.source);
   const initialValues = { code: props.marker?.source, source: props.marker?.source };
   const hasChanges = ref(false);
 
@@ -50,7 +50,7 @@
 </script>
 
 <template>
-  <div class="bg-white rounded-lg max-w-full w-full pt-1.5">
+  <div class="bg-white rounded-lg max-w-full w-full p-2">
     <v-form ref="form" v-model="valid">
       <v-text-field
           v-model="code"
@@ -59,9 +59,8 @@
           required
           flat
           solo
-          rounded="lg"
+          rounded="0"
           @input="checkChanges"
-          class="ml-1 mr-1"
       ></v-text-field>
 
       <v-text-field
@@ -69,9 +68,8 @@
           :rules="urlRules"
           label="Source"
           required
-          rounded="lg"
+          rounded="0"
           @input="checkChanges"
-          class="ml-1 mr-1"
       ></v-text-field>
 
       <v-btn

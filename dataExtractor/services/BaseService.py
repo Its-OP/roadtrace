@@ -1,12 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, TypeVar, Generic
-
 import numpy as np
-
 from entities import Vehicle, Region
 
 Frame = np.ndarray
-
 TFeature = TypeVar('TFeature')
 
 

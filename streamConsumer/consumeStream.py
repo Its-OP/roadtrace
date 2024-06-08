@@ -73,9 +73,9 @@ def on_frame_processed(result: FrameProcessingResultLight) -> None:
 
 def on_batch_processed(results: List[FrameProcessingResultRich]) -> None:
     raw_frames = [result.frame for result in results]
-    bytes = video_editor.compress(raw_frames)
-    message = FrameMessage(results, bytes)
-    publisher.send_message(message)
+    # bytes = video_editor.compress(raw_frames)
+    # message = FrameMessage(results, bytes)
+    # publisher.send_message(message)
 
 
 video_processor = VideoProcessor(model, 30, on_frame_processed, on_batch_processed, VEHICLE_CODES, 0.5, video_editor)
