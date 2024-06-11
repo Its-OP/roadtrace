@@ -40,19 +40,19 @@
   <div class="p-5">
     <h1 class="text-xl font-bold mb-4 text-left ml-2">User Management</h1>
     <button
-        v-if="hasChanges"
-        @click="saveUsers"
-        class="bg-blue-500 text-white px-4 py-2 rounded"
-    >
-      Save
-    </button>
-    <button
         @click="showAddUserForm = true"
-        class="bg-green-500 text-white px-4 py-2 rounded ml-4"
+        class="bg-blue-700 text-white px-4 py-2 rounded"
     >
       Add User
     </button>
-    <div class="overflow-x-auto bg-white rounded-lg border border-gray-300">
+    <button
+        v-if="hasChanges"
+        @click="saveUsers"
+        class="bg-green-700 text-white px-4 py-2 rounded ml-4"
+    >
+      Save
+    </button>
+    <div class="overflow-x-auto bg-white rounded-lg border border-gray-300 mt-3">
       <table class="min-w-full">
         <thead>
         <tr>

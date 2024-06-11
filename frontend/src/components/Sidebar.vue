@@ -26,9 +26,9 @@
       <div class="max-w-full w-full mt-1">
         <RealTimeChart />
       </div>
-      <v-btn-toggle v-model="selectedChart" mandatory rounded="0" class="mt-3 grid grid-flow-col justify-stretch">
-        <v-btn value="week" class="h-12">Week</v-btn>
-        <v-btn value="month" class="h-12">Month</v-btn>
+      <v-btn-toggle v-model="selectedChart" mandatory rounded="0" class="mt-3 flex justify-stretch max-w-full w-full">
+        <v-btn value="week" class="h-12 flex-1">Week</v-btn>
+        <v-btn value="month" class="h-12 flex-1">Month</v-btn>
       </v-btn-toggle>
       <div class="max-w-full w-full mt-3">
         <WeeklyChart v-show="selectedChart === 'week'" />
