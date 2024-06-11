@@ -14,7 +14,7 @@
 
 <template>
   <div class="flex justify-center items-center h-screen bg-gray-100">
-    <form @submit.prevent="handleSubmit" class="w-full max-w-sm p-6 bg-white rounded shadow-md relative pb-16">
+    <form @submit.prevent="handleSubmit" class="w-full max-w-sm p-6 bg-white rounded shadow-md relative pb-10">
       <div class="mb-4">
         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
         <input
@@ -25,7 +25,7 @@
             required
         />
       </div>
-      <div class="mb-6">
+      <div>
         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
         <input
             v-model="password"
@@ -35,8 +35,8 @@
             required
         />
       </div>
-      <div v-if="formHasErrors" class="mb-4 text-red-500 text-sm font-medium">
-        Incorrect email or password
+      <div class="text-red-500 text-sm font-medium font-[600] h-12 flex items-center">
+        <span class="text-left" v-if="formHasErrors">Incorrect email or password</span>
       </div>
       <button
           type="submit"

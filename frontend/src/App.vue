@@ -1,13 +1,7 @@
-<script setup lang="ts">
-import MainView from "./views/MainView.vue";
-import UsersView from "./views/UsersView.vue";
-import LoginView from "./views/LoginView.vue";
-</script>
+<script setup lang="ts"> </script>
 
 <template>
-<!--  <MainView />-->
-  <UsersView />
-<!--  <LoginView />-->
+ <router-view></router-view>
 </template>
 
 <style>
