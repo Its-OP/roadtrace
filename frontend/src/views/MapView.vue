@@ -6,15 +6,24 @@ import {LatLong, Marker} from "../schemas/latLong.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faUsers} from "@fortawesome/free-solid-svg-icons";
 
-const markers = ref<Marker[]>([
-  { id: 0, coordinates: { lng: -71.214518, lat: 42.203995 }, source: 'test', dirty: false },
-  { id: 1, coordinates: { lng: -71.234518, lat: 42.2203995 }, source: 'test', dirty: false },
-  { id: 2, coordinates: { lng: -71.254518, lat: 42.2403995 }, source: 'test', dirty: false },
-]);
+const markers = ref<Marker[]>([]);
+
+const save = () => {
+  for (const marker of markers.value) {
+    marker.dirty = false;
+  }
+    
+  localStorage.setItem('markers', JSON.stringify(markers.value));
+}
+
+const reset = () => {
+  markers.value = [];
+  for (const marker of JSON.parse(localStorage.getItem('markers') ?? '') as Marker[]) {
+    markers.value.push(marker);
+  }
+}
 
 const handleUpdateMarker = (markerId: number, newCoordinates: LatLong): void => {
-  console.log(markerId);
-  console.log(newCoordinates);
   const markerIndex = markers.value.findIndex(m => m.id === markerId);
   if (markerIndex === -1)
     return;
@@ -45,12 +54,16 @@ const handleAddMarker = (markerLatLong: LatLong): void => {
       </button>
     </router-link>
   </div>
-  <div class="h-screen w-screen flex">
+  <div class="h-screen w-screen flex relative">
     <div class="w-[30%]">
       <Sidebar :marker="markers[0]" />
     </div>
-    <div class="w-[70%]">
-      <Map :markers="markers" @addMarker="handleAddMarker" @updateMarker="handleUpdateMarker"/>
+    <div class="w-[70%] relative">
+      <Map :markers="markers"
+           @addMarker="handleAddMarker"
+           @updateMarker="handleUpdateMarker"
+           :onSave="save"
+           :onReset="reset"/>
     </div>
   </div>
 </template>

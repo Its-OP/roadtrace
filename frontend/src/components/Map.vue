@@ -3,7 +3,7 @@
   import 'mapbox-gl/dist/mapbox-gl.css';
   import {LatLong, Marker} from "../schemas/latLong.ts";
   import * as mapboxgl from "mapbox-gl";
-  import {ref} from "vue";
+  import {computed, ref} from "vue";
   import { v4 as uuidv4 } from 'uuid';
   const accessToken = "pk.eyJ1IjoiaXRzb3AiLCJhIjoiY2x2bWxnZXljMDM3NzJpcDFlMTAzeGh2bSJ9.FkHnP5wDLcyy7vrMosVxlA";
   
@@ -15,9 +15,18 @@
     markers: {
       type: Array as () => Marker[],
       required: true
+    },
+    onSave: {
+      type: Function,
+      required: true
+    },
+    onReset: {
+      type: Function,
+      required: true
     }
   });
-  
+
+  const showButtons = computed(() => props.markers.some(marker => marker.dirty));
   const updateMarkerPosition = (updatedMarker: mapboxgl.Marker, markerId: number): void => {
     const newCoordinates: LatLong = {
       lng: updatedMarker.getLngLat().lng,
@@ -39,10 +48,19 @@
   
   const onMapCreated = (mapboxMap: mapboxgl.Map) => {
     map.value = mapboxMap;
+    props.onReset();
   };
 </script>
 
 <template>
+  <div v-if="showButtons" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex space-x-6">
+    <button @click="onReset" class="bg-red-600 hover:bg-red-800 text-white py-2 px-4 rounded-md w-[100px]">
+      RESET
+    </button>
+    <button @click="onSave" class="bg-green-600 hover:bg-green-800 text-white py-2 px-4 rounded-md w-[100px]">
+      SAVE
+    </button>
+  </div>
   <MapboxMap 
     class="h-full w-full z-[1]"
     :access-token="accessToken"

@@ -88,7 +88,7 @@
             </select>
           </td>
           <td class="py-2 px-4 border-l border-gray-300">
-            <button @click="deleteUser(user.email)" class="bg-red-500 text-white px-4 py-2 rounded w-full">Delete</button>
+            <button @click="deleteUser(user.email)" class="bg-red-700 text-white px-4 py-2 rounded w-full">Delete</button>
           </td>
         </tr>
         </tbody>
