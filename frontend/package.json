@@ -9,11 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/free-brands-svg-icons": "^6.5.2",
+    "@fortawesome/free-regular-svg-icons": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
     "@studiometa/vue-mapbox-gl": "^2.5.0",
     "@types/toastr": "^2.1.43",
     "apexcharts": "^3.49.0",
     "mapbox-gl": "^3.3.0",
     "tailwind-scrollbar": "^3.1.0",
+    "uuid": "^10.0.0",
     "vite-plugin-vuetify": "^2.0.3",
     "vue": "^3.4.21",
     "vue-apexcharts": "^1.6.2",
@@ -23,6 +29,7 @@
   },
   "devDependencies": {
     "@types/mapbox-gl": "^3.1.0",
+    "@types/uuid": "^9.0.8",
     "@vitejs/plugin-vue": "^5.0.4",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",

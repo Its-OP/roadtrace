@@ -2,6 +2,8 @@
   import {computed, reactive, ref, watch} from 'vue';
   import AddUsers from "../components/AddUsers.vue";
   import {User, UserRoles} from "../schemas/latLong.ts";
+  import {faMapLocationDot, faUsers} from "@fortawesome/free-solid-svg-icons";
+  import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   const users = ref<User[]>([
     { email: 'user1@example.com', role: 'user' },
     { email: 'user2@example.com', role: 'manager' },
@@ -38,7 +40,14 @@
 
 <template>
   <div class="p-5">
-    <h1 class="text-xl font-bold mb-4 text-left ml-2">User Management</h1>
+    <h1 class="text-xl font-bold mb-4 text-left ml-2">Users</h1>
+    <div class="absolute top-4 right-4 z-50">
+      <router-link to="/map">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-full h-10 w-10">
+          <FontAwesomeIcon :icon="faMapLocationDot" />
+        </button>
+      </router-link>
+    </div>
     <button
         @click="showAddUserForm = true"
         class="bg-blue-700 text-white px-4 py-2 rounded"

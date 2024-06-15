@@ -16,7 +16,7 @@
 </script>
 
 <template>
-  <div class="w-full h-full z-[1] bg-slate-500 p-2 overflow-y-auto overflow-x-hidden scrollbar-track-black">
+  <div class="w-full h-full z-[1] bg-slate-500 p-2 overflow-y-auto overflow-x-hidden scrollbar-track-black custom-scrollbar">
     <div id="camera-info" class="bg-white rounded-lg max-w-full w-full pt-1.5">
       <h1 class="font-charts text-xl text-center font-bold">Camera's Details</h1>
       <MarkerInfo :marker="props.marker" />
@@ -39,5 +39,24 @@
 </template>
 
 <style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  background-color: transparent;
+}
 
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #888;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+.custom-scrollbar {
+  direction: rtl;
+}
+
+.custom-scrollbar > * {
+  direction: ltr;
+}
 </style>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
   import { ref } from 'vue';
+  import {useRouter} from "vue-router";
+
+  const router = useRouter();
   
   const email = ref('');
   const password = ref('');
@@ -7,8 +10,7 @@
   
   const handleSubmit = () => {
     // Handle form submission
-    console.log('Email:', email.value);
-    console.log('Password:', password.value);
+    router.push({ name: 'Map' });
   };
 </script>
 

@@ -4,6 +4,7 @@
   import {LatLong, Marker} from "../schemas/latLong.ts";
   import * as mapboxgl from "mapbox-gl";
   import {ref} from "vue";
+  import { v4 as uuidv4 } from 'uuid';
   const accessToken = "pk.eyJ1IjoiaXRzb3AiLCJhIjoiY2x2bWxnZXljMDM3NzJpcDFlMTAzeGh2bSJ9.FkHnP5wDLcyy7vrMosVxlA";
   
   const mapCenter: LatLong = { lng: -71.224518, lat: 42.213995 };
@@ -18,14 +19,12 @@
   });
   
   const updateMarkerPosition = (updatedMarker: mapboxgl.Marker, markerId: number): void => {
-    const markerIndex = props.markers.findIndex(marker => marker.id === markerId);
-    const marker: Marker = JSON.parse(JSON.stringify(props.markers[markerIndex]));
+    const newCoordinates: LatLong = {
+      lng: updatedMarker.getLngLat().lng,
+      lat: updatedMarker.getLngLat().lat
+    };
     
-    marker.coordinates.lng = updatedMarker.getLngLat().lng;
-    marker.coordinates.lat = updatedMarker.getLngLat().lat;
-    marker.dirty = true;
-    
-    emits('updateMarker', marker);
+    emits('updateMarker', markerId, newCoordinates);
   };
   
   const onMapClick = (event: mapboxgl.MapMouseEvent): void => {
@@ -41,8 +40,6 @@
   const onMapCreated = (mapboxMap: mapboxgl.Map) => {
     map.value = mapboxMap;
   };
-  
-  console.log(222)
 </script>
 
 <template>
@@ -56,7 +53,7 @@
     @mb-load="event => onMapCreated(event.target)"
   >
     <MapboxMarker v-for="marker in markers"
-                  :key="marker.id"
+                  :key="uuidv4()"
                   :draggable="true"
                   :lng-lat="[marker.coordinates.lng, marker.coordinates.lat]"
                   :color="marker.dirty ? 'red' : null"
