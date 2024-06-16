@@ -6,8 +6,22 @@ import {LatLong, Marker} from "../schemas/latLong.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faUsers} from "@fortawesome/free-solid-svg-icons";
 
-const markers = ref<Marker[]>(JSON.parse(localStorage.getItem('markers') ?? '') as Marker[]);
+const getMarkersFromLocalStorage = (): Marker[] => {
+  const markers = (JSON.parse(localStorage.getItem('markers') ?? '', (key, value) => {
+    if (key === 'date') {
+      return new Date(value);
+    }
+    return value;
+  }) as Marker[]);
+  
+  markers.forEach(m => m.numbers = m.numbers.sort((a, b) => b.date.getTime() - a.date.getTime()));
+  return markers;
+}
+
+const markers = ref<Marker[]>(getMarkersFromLocalStorage());
 const selectedMarker = ref<Marker | null>(markers.value[0]);
+
+console.log(markers.value);
 
 const save = () => {
   for (const marker of markers.value) {
@@ -29,7 +43,7 @@ const handleDeleteMarker = (id: number) => {
 
 const reset = () => {
   markers.value = [];
-  for (const marker of JSON.parse(localStorage.getItem('markers') ?? '') as Marker[]) {
+  for (const marker of getMarkersFromLocalStorage()) {
     markers.value.push(marker);
   }
   
@@ -58,7 +72,9 @@ const handleAddMarker = (markerLatLong: LatLong): void => {
     id: markers.value.length,
     coordinates: markerLatLong,
     source: '',
-    dirty: true
+    code: '',
+    dirty: true,
+    numbers: []
   };
   
   markers.value.push(marker);

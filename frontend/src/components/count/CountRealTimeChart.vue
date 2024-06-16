@@ -1,46 +1,68 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue';
-import { DataPoint } from '../schemas/latLong.ts';
+import {ref, onUnmounted, watch, onMounted} from 'vue';
+import {DataPoint, Marker} from '../../schemas/latLong.ts';
+
+interface Props {
+  marker: Marker | null
+};
+
+const props = defineProps<Props>();
+const intervalId = ref(0);
+
+const getDataPoints = () => [
+  { date: new Date(new Date().getTime() - 2000), value: generateRandomValue(5, 15) },
+  { date: new Date(new Date().getTime() - 1000), value: generateRandomValue(5, 15) },
+  { date: new Date(new Date().getTime()), value: generateRandomValue(5, 15) },
+];
 
 // Helper function to generate random values between min and max
 function generateRandomValue(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-const startDate = new Date('2024-04-30T00:00:00');
-
-const dataPoints = ref<DataPoint[]>([
-  { date: new Date(startDate.getTime()), value: generateRandomValue(5, 15) },
-  { date: new Date(startDate.getTime() + 1000), value: generateRandomValue(5, 15) },
-  { date: new Date(startDate.getTime() + 2000), value: generateRandomValue(5, 15) },
-]);
+const dataPoints = ref<DataPoint[]>([]);
 
 const dataIsSufficient = () => dataPoints.value.length >= 5;
 
 const series = ref([{
   name: "Values",
-  data: dataIsSufficient()
-    ? dataPoints.value.map(dp => ({ x: dp.date.toISOString().split('T')[0] + ' ' + dp.date.toTimeString().split(' ')[0], y: dp.value }))
-    : []
+  data: []
 }]);
 
-const intervalId = setInterval(() => {
-  const newValue = generateRandomValue(5, 15);
-  const lastDate = new Date(dataPoints.value.at(-1).date.getTime() + 1000); // Increment last date by 1 second
-  dataPoints.value.push({ date: lastDate, value: newValue });
+const runFillSeries = () => {
+  console.log(props.marker);
+  intervalId.value = setInterval(() => {
+    if (!props.marker?.code || !props.marker?.source) {
+      return;
+    }
+    
+    const newValue = generateRandomValue(5, 15);
+    dataPoints.value.push({ date: new Date(), value: newValue });
 
-  if (dataPoints.value.length > 20) {
-    dataPoints.value.shift(); // Remove the first element if length exceeds 20
+    if (dataPoints.value.length > 20) {
+      dataPoints.value.shift(); // Remove the first element if length exceeds 20
+    }
+
+    series.value[0].data = dataIsSufficient()
+        ? dataPoints.value.map(dp => ({
+            x: dp.date.toISOString().split('T')[0] + ' ' + dp.date.toTimeString().split(' ')[0],
+            y: dp.value
+          }))
+        : [];
+  }, 1000);
+}
+
+watch(() => props.marker, (newMarker) => {
+  if (newMarker) {
+    clearInterval(intervalId.value);
+    series.value[0].data = [];
+    dataPoints.value = getDataPoints();
+    runFillSeries();
   }
-
-  series.value[0].data = dataPoints.value.map(dp => ({
-    x: dp.date.toISOString().split('T')[0] + ' ' + dp.date.toTimeString().split(' ')[0],
-    y: dp.value
-  }));
-}, 1000);
+}, { immediate: true });
 
 onUnmounted(() => {
-  clearInterval(intervalId);
+  clearInterval(intervalId.value);
 });
 
 const chartOptions = {
@@ -48,7 +70,7 @@ const chartOptions = {
     type: 'line',
     height: 'auto',
     animations: {
-      enabled: true,
+      enabled: false,
       easing: 'linear',
       dynamicAnimation: {
         speed: 100

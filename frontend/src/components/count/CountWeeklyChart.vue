@@ -1,23 +1,31 @@
 <script setup lang="ts">
-  import {ref} from "vue";
-  import {DataPoint} from "../schemas/latLong.ts";
+  import {Marker} from "../../schemas/latLong.ts";
+  import {ref, watch} from "vue";
 
-  const dataPoints = ref<DataPoint[]>([
-    { date: new Date('2024-04-30'), value: 150 },
-    { date: new Date('2024-04-29'), value: 85 },
-    { date: new Date('2024-04-28'), value: 80 },
-    { date: new Date('2024-04-27'), value: 108 },
-    { date: new Date('2024-04-26'), value: 114 },
-    { date: new Date('2024-04-25'), value: 138 },
-    { date: new Date('2024-04-24'), value: 107 }
-  ]);
+  interface Props {
+    marker: Marker | null
+  };
 
-  const dataIsSufficient = () => dataPoints.value.length >= 5;
+  const props = defineProps<Props>();
 
-  const series = [{
+  const series = ref([{
     name: "Values",
-    data: dataIsSufficient() ? dataPoints.value.map(dp => ({ x: dp.date.toISOString().split('T')[0], y: dp.value })) : []
-  }];
+    data: props.marker?.numbers.slice(0, 7).map(dp => ({ x: dp.date.toISOString().split('T')[0], y: dp.value })) ?? []
+  }]);
+
+  watch(() => props.marker, (newMarker) => {
+    if (newMarker) {
+      series.value = [
+        {
+          name: "Values",
+          data: newMarker.numbers.slice(0, 7).map(dp => ({
+            x: dp.date.toISOString().split('T')[0],
+            y: dp.value
+          }))
+        }
+      ];
+    }
+  }, { immediate: true });
   
   const chartOptions = {
     chart: {

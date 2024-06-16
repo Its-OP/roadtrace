@@ -3,6 +3,9 @@
   import {useRouter} from "vue-router";
   import {sleep} from "../schemas/latLong.ts";
 
+  let a = { date: new Date() };
+  let b = JSON.stringify(a);
+  console.log(JSON.parse(b));
   const router = useRouter();
   
   const email = ref('');
