@@ -7,7 +7,15 @@
   import MarkerInfo from "./MarkerInfo.vue";
   
   interface Props {
-    marker: Marker | null
+    marker: Marker | null,
+    onDelete: {
+      type: Function,
+      required: true
+    },
+    onUpdate: {
+      type: Function,
+      required: true
+    },
   };
   
   const props = defineProps<Props>();
@@ -27,7 +35,7 @@
   <div class="w-full h-full z-[1] bg-slate-500 p-2 overflow-y-auto overflow-x-hidden scrollbar-track-black custom-scrollbar">
     <div id="camera-info" class="bg-white rounded-lg max-w-full w-full pt-1.5">
       <h1 class="font-charts text-xl text-center font-bold">Camera's Details</h1>
-      <MarkerInfo :marker="markerInfo" />
+      <MarkerInfo :marker="markerInfo" :onDelete="onDelete" :onUpdate="onUpdate"/>
     </div>
     <div id="charts" class="bg-white rounded-lg max-w-full w-full flex flex-col justify-center mt-3 pt-1.5 pb-1.5">
       <h1 class="font-charts text-xl text-center font-bold">Camera's Data</h1>

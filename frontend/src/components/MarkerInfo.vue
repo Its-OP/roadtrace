@@ -3,7 +3,15 @@
   import {ref, watch} from "vue";
 
   interface Props {
-    marker: Marker | null
+    marker: Marker | null,
+    onDelete: {
+      type: Function,
+      required: true
+    },
+    onUpdate: {
+      type: Function,
+      required: true
+    },
   };
 
   const props = defineProps<Props>();
@@ -42,17 +50,19 @@
   }
 
   const codeRules = [
-    v => v?.length >= 4 || 'Code must be at least 4 characters long',
-    v => v?.length <= 64 || 'Code must be no more than 64 characters long'
+    v => !hasChanges.value || v?.length >= 4 || 'Code must be at least 4 characters long',
+    v => !hasChanges.value || v?.length <= 64 || 'Code must be no more than 64 characters long'
   ];
   
   const urlRules = [
-    v => isValidHttpUrl(v) || 'Please enter a valid URL'
+    v => !hasChanges.value || isValidHttpUrl(v) || 'Please enter a valid URL'
   ];
 
   const submitForm = () => {
     if (form.value.validate()) {
-      alert('Form is valid!');
+      props.onUpdate(props.marker?.id, source, code);
+      initialValues.value.code = code.value;
+      initialValues.value.source = source.value;
     }
   }
 
@@ -83,9 +93,16 @@
       ></v-text-field>
 
       <v-btn
+          @click="_ => onDelete(marker?.id)"
+          class="max-w-full w-full rounded-bl rounded-br red--text bg-red-600 delete-btn"
+      >
+        Delete
+      </v-btn>
+
+      <v-btn
           v-if="hasChanges && valid"
           @click="submitForm"
-          class="max-w-full w-full rounded-bl rounded-br"
+          class="max-w-full w-full rounded-bl rounded-br mt-2"
       >
         Update
       </v-btn>
@@ -96,5 +113,10 @@
 <style>
   .v-field__outline {
     visibility: hidden !important
+  }
+  
+  .delete-btn {
+    --tw-bg-opacity: 0.8;
+    background-color: rgb(220 38 38 / var(--tw-bg-opacity)) !important;
   }
 </style>

@@ -17,6 +17,16 @@ const save = () => {
   localStorage.setItem('markers', JSON.stringify(markers.value));
 }
 
+const handleDeleteMarker = (id: number) => {
+  const markerIndex = markers.value.findIndex(m => m.id === id);
+  if (markerIndex === -1)
+    return;
+
+  markers.value.splice(markerIndex, 1);
+  save();
+  selectedMarker.value = markers.value[0]
+}
+
 const reset = () => {
   markers.value = [];
   for (const marker of JSON.parse(localStorage.getItem('markers') ?? '') as Marker[]) {
@@ -53,6 +63,21 @@ const handleAddMarker = (markerLatLong: LatLong): void => {
   
   markers.value.push(marker);
 }
+
+const handleUpdateMarkerDetails = (markerId: number, newSource: string, newCode: string) => {
+  const markerIndex = markers.value.findIndex(m => m.id === markerId);
+  if (markerIndex === -1)
+    return;
+
+  const marker = markers.value[markerIndex];
+  marker.source = newSource;
+  marker.code = newCode;
+  markers.value.splice(markerIndex, 1, marker);
+  save();
+  reset();
+  setSelectedMarker(marker);
+}
+
 </script>
 
 <template>
@@ -65,7 +90,7 @@ const handleAddMarker = (markerLatLong: LatLong): void => {
   </div>
   <div class="h-screen w-screen flex relative">
     <div class="w-[30%]">
-      <Sidebar :marker="selectedMarker" />
+      <Sidebar :marker="selectedMarker" :onDelete="handleDeleteMarker" :onUpdate="handleUpdateMarkerDetails"/>
     </div>
     <div class="w-[70%] relative">
       <Map :markers="markers"
