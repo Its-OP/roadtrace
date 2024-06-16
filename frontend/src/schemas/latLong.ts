@@ -6,6 +6,7 @@ export interface LatLong {
 export interface Marker {
     id: number,
     coordinates: LatLong,
+    code: string,
     source: string,
     dirty: boolean
 }

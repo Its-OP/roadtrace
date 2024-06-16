@@ -10,7 +10,7 @@
   const mapCenter: LatLong = { lng: -71.224518, lat: 42.213995 };
   const map = ref<mapboxgl.Map | null>(null);
   
-  const emits = defineEmits(['addMarker', 'removeMarker', 'updateMarker']);
+  const emits = defineEmits(['addMarker', 'removeMarker', 'updateMarker', 'setSelectedMarker']);
   const props = defineProps({
     markers: {
       type: Array as () => Marker[],
@@ -26,6 +26,34 @@
     }
   });
 
+  const findClosestMarker = (clickLat: number, clickLon: number) : Marker | null => {
+    const boundaryLat = 0.005;
+    const boundaryLon = 0.005;
+    let closestMarker: Marker | null = null;
+    let minDistance = Number.MAX_VALUE;
+
+    props.markers.forEach((marker) => {
+      const markerLat = marker.coordinates.lat;
+      const markerLon = marker.coordinates.lng;
+
+      if (
+          Math.abs(markerLat - clickLat) <= boundaryLat &&
+          Math.abs(markerLon - clickLon) <= boundaryLon
+      ) {
+        const distance = Math.sqrt(
+            Math.pow(markerLat - clickLat, 2) + Math.pow(markerLon - clickLon, 2)
+        );
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestMarker = marker;
+        }
+      }
+    });
+
+    return closestMarker;
+  };
+
   const showButtons = computed(() => props.markers.some(marker => marker.dirty));
   const updateMarkerPosition = (updatedMarker: mapboxgl.Marker, markerId: number): void => {
     const newCoordinates: LatLong = {
@@ -36,7 +64,7 @@
     emits('updateMarker', markerId, newCoordinates);
   };
   
-  const onMapClick = (event: mapboxgl.MapMouseEvent): void => {
+  const onMapDblClick = (event: mapboxgl.MapMouseEvent): void => {
     event.preventDefault();
     const clickLatLong: LatLong = {
       lat: event.lngLat.lat,
@@ -44,6 +72,17 @@
     }
     
     emits('addMarker', clickLatLong);
+  }
+  
+  const onMapClick = (event: mapboxgl.MapMouseEvent): void => {
+    const closestMarker = findClosestMarker(event.lngLat.lat, event.lngLat.lng);
+    if (closestMarker) {
+      setSelectedMarker(closestMarker);
+    }
+  }
+  
+  const setSelectedMarker = (marker: Marker) => {
+    emits('setSelectedMarker', marker)
   }
   
   const onMapCreated = (mapboxMap: mapboxgl.Map) => {
@@ -67,15 +106,18 @@
     :zoom="12"
     :center="[mapCenter.lng, mapCenter.lat]"
     map-style="mapbox://styles/itsop/clvmljz4901kf01qu3ps6hzs3"
-    @mb-dblclick="onMapClick"
+    @mb-dblclick="onMapDblClick"
+    @mb-click="onMapClick"
     @mb-load="event => onMapCreated(event.target)"
   >
     <MapboxMarker v-for="marker in markers"
                   :key="uuidv4()"
+                  :id="marker.id"
                   :draggable="true"
                   :lng-lat="[marker.coordinates.lng, marker.coordinates.lat]"
                   :color="marker.dirty ? 'red' : null"
-                  @mb-dragend="event => updateMarkerPosition(event.target, marker.id)"/>
+                  @mb-dragend="event => updateMarkerPosition(event.target, marker.id)"
+                  @mb-dragstart="_ => setSelectedMarker(marker)"/>
     <MapboxNavigationControl position="bottom-right" />
   </MapboxMap>
 </template>

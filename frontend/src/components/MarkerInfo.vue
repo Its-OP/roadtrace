@@ -10,10 +10,24 @@
 
   const form = ref(null);
   const valid = ref(false);
-  const code = "camera1"; // ref(props.marker?.source);
-  const source = "https://kinesis.us-east-2.777788889999.stream" // ref(props.marker?.source);
-  const initialValues = { code: props.marker?.source, source: props.marker?.source };
+  const code = ref<string | undefined>(props.marker?.code);
+  const source = ref<string | undefined>(props.marker?.source);
+  const initialValues = ref({ code: props.marker?.code, source: props.marker?.source });
   const hasChanges = ref(false);
+
+  const checkChanges = () => {
+    hasChanges.value = code.value !== initialValues.value.code || source.value !== initialValues.value.source;
+  };
+
+  // Watch for changes in the marker prop and update the local state accordingly
+  watch(() => props.marker, (newMarker) => {
+    if (newMarker) {
+      code.value = newMarker.code;
+      source.value = newMarker.source;
+      initialValues.value = { code: newMarker.code, source: newMarker.source };
+      checkChanges();  // Reset the hasChanges state
+    }
+  }, { immediate: true });
 
   const isValidHttpUrl = (string) => {
     let url;
@@ -28,8 +42,8 @@
   }
 
   const codeRules = [
-    v => v.length >= 4 || 'Code must be at least 4 characters long',
-    v => v.length <= 64 || 'Code must be no more than 64 characters long'
+    v => v?.length >= 4 || 'Code must be at least 4 characters long',
+    v => v?.length <= 64 || 'Code must be no more than 64 characters long'
   ];
   
   const urlRules = [
@@ -41,10 +55,6 @@
       alert('Form is valid!');
     }
   }
-
-  const checkChanges = () => {
-    hasChanges.value = code.value !== initialValues.code || source.value !== initialValues.source;
-  };
 
   watch([code, source], checkChanges);
 </script>

@@ -6,7 +6,8 @@ import {LatLong, Marker} from "../schemas/latLong.ts";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faUsers} from "@fortawesome/free-solid-svg-icons";
 
-const markers = ref<Marker[]>([]);
+const markers = ref<Marker[]>(JSON.parse(localStorage.getItem('markers') ?? '') as Marker[]);
+const selectedMarker = ref<Marker | null>(markers.value[0]);
 
 const save = () => {
   for (const marker of markers.value) {
@@ -21,6 +22,14 @@ const reset = () => {
   for (const marker of JSON.parse(localStorage.getItem('markers') ?? '') as Marker[]) {
     markers.value.push(marker);
   }
+  
+  if (!selectedMarker.value) {
+    selectedMarker.value = markers.value.length ? markers.value[0] : null;
+  } 
+}
+
+const setSelectedMarker = (marker: Marker) => {
+  selectedMarker.value = marker;
 }
 
 const handleUpdateMarker = (markerId: number, newCoordinates: LatLong): void => {
@@ -56,14 +65,15 @@ const handleAddMarker = (markerLatLong: LatLong): void => {
   </div>
   <div class="h-screen w-screen flex relative">
     <div class="w-[30%]">
-      <Sidebar :marker="markers[0]" />
+      <Sidebar :marker="selectedMarker" />
     </div>
     <div class="w-[70%] relative">
       <Map :markers="markers"
            @addMarker="handleAddMarker"
            @updateMarker="handleUpdateMarker"
            :onSave="save"
-           :onReset="reset"/>
+           :onReset="reset"
+           @setSelectedMarker="setSelectedMarker"/>
     </div>
   </div>
 </template>
