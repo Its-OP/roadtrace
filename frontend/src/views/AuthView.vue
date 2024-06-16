@@ -1,16 +1,24 @@
 <script setup lang="ts">
   import { ref } from 'vue';
   import {useRouter} from "vue-router";
+  import {sleep} from "../schemas/latLong.ts";
 
   const router = useRouter();
   
   const email = ref('');
   const password = ref('');
-  const formHasErrors = true;
+  
+  const isEmailValid = () => email.value == 'prostakov.oleh@gmail.com';
+  const isPasswordValid = () => password.value == 'qwerty';
+  
+  const formHasErrors = ref(false);
   
   const handleSubmit = () => {
-    // Handle form submission
-    router.push({ name: 'Map' });
+    formHasErrors.value = !isEmailValid() || !isPasswordValid();
+    if (!formHasErrors.value) {
+      sleep(500);
+      router.push({ name: 'Map' });
+    }
   };
 </script>
 
@@ -37,9 +45,10 @@
             required
         />
       </div>
-      <div class="text-red-500 text-sm font-medium font-[600] h-12 flex items-center">
-        <span class="text-left" v-if="formHasErrors">Incorrect email or password</span>
+      <div v-if="formHasErrors" class="text-red-500 text-sm font-medium font-[600] flex items-center h-12">
+        <span class="text-left ">Incorrect email or password</span>
       </div>
+      <div v-else class="text-red-500 text-sm font-medium font-[600] flex items-center h-6" />
       <button
           type="submit"
           class="w-full py-2 px-4 bg-blue-600 text-white font-medium absolute bottom-0 left-0 right-0 rounded-b-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

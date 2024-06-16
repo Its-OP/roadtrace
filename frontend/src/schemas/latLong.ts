@@ -24,3 +24,8 @@ export interface User {
 }
 
 export const UserRoles = ['user', 'manager', 'administrator'];
+
+export function sleep(milliseconds) {
+    const start = Date.now();
+    while (Date.now() - start < milliseconds) { }
+}
